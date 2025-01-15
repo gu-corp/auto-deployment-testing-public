@@ -1,9 +1,7 @@
 name: Environment Approval Workflow
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch
 
 jobs:
   build:
@@ -23,7 +21,7 @@ jobs:
       - name: Run tests
         run: npm test
 
-  staging:
+  stage:
     needs: build
     runs-on: ubuntu-latest
     environment:
@@ -32,8 +30,8 @@ jobs:
       - name: Deploy to staging
         run: echo "Deploying to staging environment..."
 
-  production:
-    needs: staging
+  prod:
+    needs: build
     runs-on: ubuntu-latest
     environment:
       name: production
