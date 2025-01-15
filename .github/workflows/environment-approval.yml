@@ -19,7 +19,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     environment:
-      name: staging
+      name: stage
     steps:
       - name: Deploy to staging
         run: echo "Deploying to staging environment..."
@@ -28,7 +28,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     environment:
-      name: production
+      name: prod
       url: https://production.example.com
     steps:
       - name: Deploy to production
