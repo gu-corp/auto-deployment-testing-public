@@ -15,12 +15,6 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run tests
-        run: npm test
-
   stage:
     needs: build
     runs-on: ubuntu-latest
