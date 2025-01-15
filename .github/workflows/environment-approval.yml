@@ -1,0 +1,43 @@
+name: Environment Approval Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+  staging:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+    steps:
+      - name: Deploy to staging
+        run: echo "Deploying to staging environment..."
+
+  production:
+    needs: staging
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://production.example.com
+    steps:
+      - name: Deploy to production
+        run: echo "Deploying to production environment..."
