@@ -1,7 +1,12 @@
 name: Run Terraform Apply
 
 on:
-  workflow_dispatch
+    workflow_dispatch:
+        inputs:
+          version:
+            type: string
+            required: true
+            description: Select the tag version to deploy
 
 jobs:
   preview:

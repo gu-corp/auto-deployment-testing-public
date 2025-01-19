@@ -2,7 +2,7 @@
 terraform {
   backend "gcs" {
     bucket  = "terraform-state-github-action-cicd"
-    path    = "terraform-state/develop.tfstate"
+    path    = "terraform/develop.tfstate"
     project = "gu-testing-workspace"
  }
 }
