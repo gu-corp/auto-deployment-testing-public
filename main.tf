@@ -10,11 +10,22 @@ resource "google_compute_instance" "gcp_test_1" {
     }
   }
   
+// Local SSD disk
+  scratch_disk {
+    interface = "NVME"
+  }
+
   network_interface {
     network = "default"
 
     access_config {
-      // Ephemeral IP
+      // Ephemeral public IP
     }
   }
+
+  metadata = {
+    foo = "bar"
+  }
+
+  metadata_startup_script = "echo hi > /test.txt"
 }
