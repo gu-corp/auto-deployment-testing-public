@@ -33,9 +33,7 @@ jobs:
       - name: Install Terraform with asdf
         run: |
           asdf plugin add terraform
-          asdf plugin add opentofu
           asdf install terraform
-          asdf install opentofu
 
       ### Linting
 
