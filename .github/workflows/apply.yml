@@ -1,9 +1,7 @@
 name: Run Terraform Apply
 
 on:
-  push:
-    branches:
-      - develop
+  workflow_dispatch:
 
 jobs:
   preview:
