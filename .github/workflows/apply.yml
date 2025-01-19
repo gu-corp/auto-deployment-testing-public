@@ -50,7 +50,7 @@ jobs:
         if: steps.list.outputs.stdout
         id: init
         run: |
-          terramate run --changed -- terraform init
+          terraform init
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
 
@@ -58,6 +58,6 @@ jobs:
         if: steps.list.outputs.stdout
         id: apply
         run: |
-          terramate run --changed -- terraform apply -input=false -auto-approve
+          terraform apply -input=false -auto-approve
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
