@@ -3,11 +3,13 @@ name: Run Terraform Apply
 on:
   push:
     branches:
-      - main
+      - develop
 
 jobs:
   preview:
     name: Apply
+    environment:
+      name: develop
     runs-on: ubuntu-latest
 
     permissions:
@@ -44,22 +46,18 @@ jobs:
           echo "STDOUT" >>$GITHUB_OUTPUT
           exit ${EXIT_CODE}
 
-      - name: Configure AWS Credentials
-        if: steps.list.outputs.stdout
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-central-1
-
       - name: Run Terraform init on changed stacks
         if: steps.list.outputs.stdout
         id: init
         run: |
           terramate run --changed -- terraform init
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
 
       - name: Create Terraform apply on changed stacks
         if: steps.list.outputs.stdout
         id: apply
         run: |
           terramate run --changed -- terraform apply -input=false -auto-approve
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}

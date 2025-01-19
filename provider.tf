@@ -1,5 +1,5 @@
 # Configure the Google Cloud provider
 provider "google" {
-  project = "anhhd-project-1"
-  region  = "us-east1-b"
+  project = "gu-testing-workspace"
+  region  = "us-central1"
 }

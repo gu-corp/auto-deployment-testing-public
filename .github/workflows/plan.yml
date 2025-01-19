@@ -6,6 +6,8 @@ on:
 jobs:
   preview:
     name: Plan
+    environment:
+      name: develop
     runs-on: ubuntu-latest
 
     permissions:
@@ -42,20 +44,14 @@ jobs:
           echo "STDOUT" >>$GITHUB_OUTPUT
           exit ${EXIT_CODE}
 
-      - name: Configure AWS Credentials
-        if: steps.list.outputs.stdout
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-central-1
-
       - name: Create Terraform plan on changed stacks
         if: steps.list.outputs.stdout
         run: |
           terramate run --changed -- terraform init
           terramate run --changed -- terraform validate
           terramate run --changed -- terraform plan -out out.tfplan
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
 
       - name: Generate Preview Comment
         if: steps.list.outputs.stdout
