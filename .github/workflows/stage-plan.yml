@@ -1,4 +1,4 @@
-name: Preview Terraform Plan
+name: Stage Preview Terraform Plan Workflow
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ jobs:
   preview:
     name: Plan
     environment:
-      name: develop
+      name: stage
     runs-on: ubuntu-latest
 
     permissions:
