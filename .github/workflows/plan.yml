@@ -44,43 +44,30 @@ jobs:
         run: terraform fmt -recursive -check -diff
 
       ### Check for changed stacks
-
       - name: List changed stacks
-        id: list-changed
-        run: terramate list -C stacks --changed
-
-      - name: Run Terraform init in all changed stacks
-        if: steps.list-changed.outputs.stdout
+        id: list
         run: |
-          terramate script run \
-            -C stacks \
-            --changed \
-            --parallel 1 \
-            init
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+          echo "stdout<<STDOUT" >>$GITHUB_OUTPUT
+          terramate list --changed >>$GITHUB_OUTPUT
+          EXIT_CODE=$?
+          echo "STDOUT" >>$GITHUB_OUTPUT
+          exit ${EXIT_CODE}
 
-      - name: Plan Terraform changes in changed stacks
-        if: steps.list-changed.outputs.stdout
+      - name: Create Terraform plan on changed stacks
+        if: steps.list.outputs.stdout
         run: |
-          terramate script run \
-            -C stacks \
-            --changed \
-            --parallel 5 \
-            --continue-on-error \
-            -- \
-            preview
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+          terramate run --changed -- terraform init
+          terramate run --changed -- terraform validate
+          terramate run --changed -- terraform plan -out out.tfplan
 
       - name: Generate Preview Comment
-        if: steps.list-changed.outputs.stdout
+        if: steps.list.outputs.stdout
         id: comment
         run: |
           echo >>pr-comment.txt "### List of Changed Stacks"
           echo >>pr-comment.txt
           echo >>pr-comment.txt '```bash'
-          echo >>pr-comment.txt "${{ steps.list-changed.outputs.stdout }}"
+          echo >>pr-comment.txt "${{ steps.list.outputs.stdout }}"
           echo >>pr-comment.txt '```'
           echo >>pr-comment.txt
           echo >>pr-comment.txt "#### Terraform Plan"
@@ -91,7 +78,7 @@ jobs:
           cat pr-comment.txt >>$GITHUB_STEP_SUMMARY
 
       - name: Inform about no Changed Stacks
-        if: (!steps.list-changed.outputs.stdout)
+        if: (!steps.list.outputs.stdout)
         run: |
           echo >>pr-comment.txt '### No changed stacks.'
           cat pr-comment.txt >>$GITHUB_STEP_SUMMARY
