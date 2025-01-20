@@ -7,10 +7,6 @@ on:
         description: "The version to deploy (e.g., v1.0.0)"
         required: true
         default: "v1.0.0"
-      branch:
-        description: "Branch to deploy from"
-        required: true
-        default: "stage"
 
 jobs:
   preview:
@@ -28,15 +24,15 @@ jobs:
       - name: Validate branch
         id: validate-branch
         run: |
-          if [[ "${{ github.ref_name }}" != "${{ github.event.inputs.branch }}" ]]; then
-            echo "This workflow can only be triggered for the branch: ${{ github.event.inputs.branch }}"
+          if [[ "${{ github.ref_name }}" != "stage" ]]; then
+            echo "This workflow can only be triggered for the branch: stage"
             exit 1
           fi
 
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.inputs.branch }}
+          ref: stage
           fetch-depth: 0
 
       ### Install tooling
