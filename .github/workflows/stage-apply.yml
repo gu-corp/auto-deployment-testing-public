@@ -2,6 +2,15 @@ name: Stage Terraform Apply
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "The version to deploy (e.g., v1.0.0)"
+        required: true
+        default: "v1.0.0"
+      branch:
+        description: "Branch to deploy from"
+        required: true
+        default: "stage"
 
 jobs:
   preview:
@@ -16,10 +25,18 @@ jobs:
       pull-requests: write
 
     steps:
+      - name: Validate branch
+        id: validate-branch
+        run: |
+          if [[ "${{ github.ref_name }}" != "${{ github.event.inputs.branch }}" ]]; then
+            echo "This workflow can only be triggered for the branch: ${{ github.event.inputs.branch }}"
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.event.inputs.branch }}
           fetch-depth: 0
 
       ### Install tooling
@@ -56,6 +73,6 @@ jobs:
         if: steps.list.outputs.stdout
         id: apply
         run: |
-          terraform apply -input=false -auto-approve
+          terraform apply -input=false -auto-approve -var="version=${{ github.event.inputs.version }}"
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
